@@ -6,15 +6,18 @@ app = Flask(__name__)
 # Endpoint to get recommendations
 @app.route('/recommend', methods=['GET'])
 def recommend():
-    song_id = request.args.get('song_id')
+    # print(request.args)
+    print(request.args.get('user_id'))
+    user_id = request.args.get('user_id')
     
     # Fetch song data and get recommendations
-    songs_df = fetch_songs_from_db()
-    recommendations = recommend_songs(song_id, songs_df)
+    recommendations = recommend_songs(user_id)
     
     # Convert recommendations to JSON format
-    recommended_songs = recommendations[['name', 'artist', 'album', 'popularity']].to_dict('records')
-    return jsonify(recommended_songs)
+    # recommended_songs = recommendations[['name', 'artist', 'album', 'popularity']].to_dict('records')
+    # return jsonify(recommended_songs)
+
+    return jsonify({'recommendations': recommendations})
 
 if __name__ == '__main__':
     app.run(debug=True)
