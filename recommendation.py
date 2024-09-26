@@ -2,13 +2,14 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from pymongo import MongoClient
 from bson import ObjectId
+import logging
 
 # Configure logging
-# logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 # Connect to MongoDB
-client = MongoClient("mongodb+srv://dubeydon:xdksLmXEcsX_Zm9@cluster0.zrmmdlj.mongodb.net/musicmania?retryWrites=true&w=majority&appName=Cluster0")
-db = client.musicmania
+client = MongoClient("mongodb+srv://annggrg:5nzk-b7NG_sLfcm@cluster0.zsvdrja.mongodb.net/Musicmania?retryWrites=true&w=majority&appName=Cluster0")
+db = client.Musicmania
 
 def fetch_user_data(user_id):
     try:
@@ -17,9 +18,16 @@ def fetch_user_data(user_id):
             raise ValueError("Invalid user_id")
         
         user_id = ObjectId(user_id)
+
+        # Log the user_id being queried
+        logging.debug(f"Fetching data for user_id: {user_id}")
+
+        logging.debug(f"Database collections: {db.list_collection_names()}")
         
         # Fetch user's playlist and language preferences from the users collection
         user = db['users'].find_one({'_id': user_id}, {'playlist': 1, 'language': 1})
+
+        logging.debug(f"User data: {user}")
         
         if user is None:
             raise ValueError("User not found")
@@ -99,6 +107,8 @@ def recommend_songs(user_id):
 
     # Convert ObjectId to string for JSON serialization
     for song in recommended_songs:
+        # set type to "song" for each song
+        song['type'] = 'song'
         for key, value in song.items():
             if isinstance(value, ObjectId):
                 song[key] = str(value)
